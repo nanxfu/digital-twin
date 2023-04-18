@@ -1,32 +1,35 @@
 <template>
-  <div class="right-bar">
+  <!--  难点1.使用v-show控制组件显示会导致echart图表宽度塌缩。原因：其父元素可能会在DOM中获得一个新的尺寸。这可能会导致某些元素无法正确渲染-->
+  <!--  解决方案：使用nexttick更新dom-->
+  <div class="right-bar" v-show="eventBus.openSideBar">
     <a-scrollbar style="height: 100vh;overflow-y: scroll;">
       <div class="scroll-wrapper">
-      <a-typography>
-        <a-typography-title :heading="5">
-          注肥单元
-        </a-typography-title>
-        <a-divider></a-divider>
-      <div class="charts" ref="volumechartRef"></div>
-        <a-typography-title :heading="5">
-          施肥策略
-        </a-typography-title>
-        <a-divider></a-divider>
-        <a-table :columns="columns" :data="data" />
-      </a-typography>
+        <a-typography>
+          <a-typography-title :heading="5">
+            注肥单元
+          </a-typography-title>
+          <a-divider></a-divider>
+          <div class="charts" ref="volumechartRef"></div>
+          <a-typography-title :heading="5">
+            施肥策略
+          </a-typography-title>
+          <a-divider></a-divider>
+          <a-table :columns="columns" :data="data"/>
+        </a-typography>
       </div>
     </a-scrollbar>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, reactive} from "vue";
+import {onMounted, ref, reactive, nextTick, watch} from "vue";
 
 import * as echarts from 'echarts';
+import {useEventBusStore} from "../../store/eventBus";
 
 let volumechartRef = ref(null)
 let volumeChart: echarts.EChartsType;
-
+let eventBus = useEventBusStore()
 onMounted(() => {
   if (volumechartRef.value) {
     volumeChart = echarts.init(volumechartRef.value, 'dark')
@@ -81,11 +84,14 @@ onMounted(() => {
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
           },
-          smooth:true
+          smooth: true
         }
       ]
     })
   }
+})
+watch(() => eventBus.openSideBar, () => {
+  nextTick(() => volumeChart.resize())
 })
 const columns = [
   {
@@ -150,13 +156,15 @@ const data = reactive([{
   /*pointer-events: none;*/
   padding: 10px;
 }
+
 .charts {
   height: 400px;
   width: 100%;
   /*padding: 10px 5px;*/
   /*border: #3c7eff 10px solid;*/
 }
-.scroll-wrapper{
+
+.scroll-wrapper {
   padding-bottom: 32px;
 }
 </style>

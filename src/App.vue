@@ -4,10 +4,12 @@ import MachineState from "./components/MachineState/MachineState.vue";
 import {onMounted, ref, watch, reactive} from "vue";
 import {useMachineStore} from "./store/machine";
 import MachineDetail from "./components/MachineDetail/MachineDetail.vue";
-
+import {useEventBusStore} from "./store/eventBus";
+// 难点2. 静态资源生产环境与开发环境不一致
 let machineStore = useMachineStore()
 let machineState = ref(0)
-
+let eventBus = useEventBusStore()
+let buttonTitle = ref("打开")
 const images = [
   'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/cd7a1aaea8e1c5e3d26fe2591e561798.png~tplv-uwbnlip3yd-webp.webp',
   'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/6480dbc69be1b5de95010289787d64f1.png~tplv-uwbnlip3yd-webp.webp',
@@ -25,17 +27,25 @@ const Loginform = reactive({
   name: '',
   password: '',
 });
-function handleLogin(){
-visible.value = true
+
+function handleLogin() {
+  visible.value = true
 }
-function handleSubmit(){
+
+function handleSubmit() {
 
 }
-function handleOk () {
+
+function handleOk() {
   visible.value = false;
 };
+
 function handleCancel() {
   visible.value = false;
+}
+
+function openSideBar(){
+  eventBus.openSideBar = !eventBus.openSideBar
 }
 </script>
 
@@ -65,15 +75,15 @@ function handleCancel() {
                   <template #title>
                     管理员登录
                   </template>
-                  <a-form :model="Loginform"  @submit="handleSubmit">
-                    <a-form-item field="name"  label="用户名">
+                  <a-form :model="Loginform" @submit="handleSubmit">
+                    <a-form-item field="name" label="用户名">
                       <a-input
                           v-model="Loginform.name"
                           placeholder="请输入用户名"
                       />
                     </a-form-item>
                     <a-form-item field="password" label="密码">
-                      <a-input v-model="Loginform.password" placeholder="请输入密码" />
+                      <a-input v-model="Loginform.password" placeholder="请输入密码"/>
                     </a-form-item>
                   </a-form>
                 </a-modal>
@@ -116,7 +126,6 @@ function handleCancel() {
               </div>
               <a-carousel
                   :style="{
-
       height: '240px',
     }"
                   :auto-play="true"
@@ -136,12 +145,17 @@ function handleCancel() {
           </div>
         </a-scrollbar>
         <div class="btn-container">
-          <a-button type="primary" long class="detail">
-            施肥机详细
-            <icon-right/>
+          <a-button type="primary" long class="detail" @click="openSideBar">
+            <template v-if="eventBus.openSideBar">
+              关闭
+              <icon-left/>
+            </template>
+            <template v-else>
+              施肥机详情
+              <icon-right/>
+            </template>
           </a-button>
         </div>
-
       </aside>
     </a-col>
     <a-col :span="16">

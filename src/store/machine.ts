@@ -21,6 +21,6 @@ export const useMachineStore = defineStore('machine', () => {
         ec,
         pH,
         MachineVertex,
-        currentMachine
+        currentMachine,
     }
 })
