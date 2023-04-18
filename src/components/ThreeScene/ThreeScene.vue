@@ -37,7 +37,8 @@ let camera: THREE.PerspectiveCamera
 let cameraControls: OrbitControls
 let axesHelper: THREE.AxesHelper
 let ambientLight: THREE.AmbientLight
-
+let cube:THREE.Mesh;
+let cube2;
 const degreesToRads = deg => (deg * Math.PI) / 180.0;
 
 let stats = new Stats();
@@ -47,11 +48,16 @@ document.body.appendChild(stats.domElement)
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-// window.addEventListener( 'pointermove', onPointerMove );
+// canvas.addEventListener( 'pointermove', onPointerMove );
+onMounted(()=>{
+  (canvas.value as HTMLElement).addEventListener('pointermove', onPointerMove)
+})
 function onPointerMove(event) {
+if(canvas.value){
+  pointer.x = (event.offsetX / canvas.value.clientWidth ) * 2 - 1;
+  pointer.y = -(event.offsetY / canvas.value.clientHeight) * 2 + 1;
+}
   // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
-  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 }
 
@@ -59,6 +65,13 @@ function animate() {
   requestAnimationFrame(animate);
   stats.update();
   cameraControls.update()
+  raycaster.setFromCamera(pointer, camera);
+  let intersects = raycaster.intersectObjects( [cube] );
+  cube.material.color.set(0x3f4341)
+  if(intersects.length > 0){
+    intersects[0].object.material.color.set(0xff0000)
+    // console.log(intersects)
+  }
   renderer.render(scene, camera)
 }
 
@@ -130,7 +143,7 @@ function initScene() {
     }
   }
   // renderer.setClearColor(0x7780FF)
-  /*
+
   // ==== CUBE ====
   {
     const geometry = new THREE.BoxGeometry(1, 1, 1)
@@ -141,8 +154,8 @@ function initScene() {
       roughness: 0.7,
     })
     // create a Mesh containing the geometry and material
-    const cube = new THREE.Mesh(geometry, material)
-    const cube2 = new THREE.Mesh(geometry, material)
+    cube = new THREE.Mesh(geometry, material)
+    cube2 = new THREE.Mesh(geometry, material)
     cube.castShadow = true
     cube.position.y = 0.5
     cube.position.x = 10
@@ -169,7 +182,7 @@ function initScene() {
     scene.add(cube2)
     scene.add(plane)
   }
-  */
+
 
   // ===== 🪄 HELPERS =====
   {
@@ -228,8 +241,11 @@ function initScene() {
 
   // ==== Raycaster ====
   {
-    raycaster.setFromCamera(pointer, camera);
 
+    // console.log(intersects)
+    // for ( var i = 0; i < intersects.length; i++ ) {
+    //   intersects[i].object.material.color.set( 0xff0000 );
+    // }
   }
 }
 
