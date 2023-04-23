@@ -95,53 +95,57 @@ watch(() => eventBus.openSideBar, () => {
 })
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
+    title: '任务',
+    dataIndex: 'task',
   },
   {
-    title: 'Salary',
-    dataIndex: 'salary',
+    title: '时间点',
+    dataIndex: 'time',
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
+    title: '操作设备',
+    dataIndex: 'equipment',
   },
   {
-    title: 'Email',
-    dataIndex: 'email',
+    title: '是否循环',
+    dataIndex: 'isLoop',
   },
 ];
 const data = reactive([{
-  key: '1',
-  name: 'Jane Doe',
-  salary: 23000,
-  address: '32 Park Road, London',
-  email: 'jane.doe@example.com'
-}, {
-  key: '2',
-  name: 'Alisa Ross',
-  salary: 25000,
-  address: '35 Park Road, London',
-  email: 'alisa.ross@example.com'
-}, {
-  key: '3',
-  name: 'Kevin Sandra',
-  salary: 22000,
-  address: '31 Park Road, London',
-  email: 'kevin.sandra@example.com'
-}, {
-  key: '4',
-  name: 'Ed Hellen',
-  salary: 17000,
-  address: '42 Park Road, London',
-  email: 'ed.hellen@example.com'
-}, {
-  key: '5',
-  name: 'William Smith',
-  salary: 27000,
-  address: '62 Park Road, London',
-  email: 'william.smith@example.com'
-}]);
+  "key": "1",
+  "task": "A田施肥",
+  "time": "2023/4/12 00:30",
+  "equipment": "设备A",
+  "isLoop": "false"
+},
+  {
+    "key": "2",
+    "task": "B田灌溉",
+    "time": "2023/4/13 09:00",
+    "equipment": "设备B",
+    "isLoop": "true"
+  },
+  {
+    "key": "3",
+    "task": "C田施肥",
+    "time": "2023/4/14 14:30",
+    "equipment": "设备C",
+    "isLoop": "false"
+  },
+  {
+    "key": "4",
+    "task": "B田施肥",
+    "time": "2023/4/15 11:45",
+    "equipment": "设备C",
+    "isLoop": "true"
+  },
+  {
+    "key": "5",
+    "task": "C田灌溉",
+    "time": "2023/4/16 08:00",
+    "equipment": "设备A",
+    "isLoop": "false"
+  }]);
 
 </script>
 
