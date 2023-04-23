@@ -223,11 +223,11 @@ function initScene() {
     const gltfLoader = new GLTFLoader();
     const dracoLoader = new DRACOLoader()
 
-    dracoLoader.setDecoderPath('/static/draco/')
+    dracoLoader.setDecoderPath('/draco/')
     dracoLoader.preload()
     gltfLoader.setDRACOLoader(dracoLoader)
     gltfLoader.load(
-        'static/model/farm.gltf',
+        '/model/farm.gltf',
         (gltf) => {
           gltf.scene.scale.set(1.5, 1.5, 1.5)
           scene.add(gltf.scene)
