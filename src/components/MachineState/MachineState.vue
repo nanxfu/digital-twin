@@ -52,7 +52,6 @@ function changeCurrentMachine() {
 
 machineStore.$subscribe((mutation, state) => {
   let index = state.currentMachine;
-  console.log('index changed', index)
   if (ecChart && pHchart) {
     ecChart.setOption({
       series: [

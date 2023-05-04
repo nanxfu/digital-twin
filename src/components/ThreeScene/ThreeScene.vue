@@ -39,6 +39,7 @@ let axesHelper: THREE.AxesHelper
 let ambientLight: THREE.AmbientLight
 let cube:THREE.Mesh;
 let cube2;
+let machines: Array<THREE.Group>
 const degreesToRads = deg => (deg * Math.PI) / 180.0;
 
 let stats = new Stats();
@@ -138,7 +139,7 @@ function initScene() {
     {
       cameraControls = new OrbitControls(camera, canvas.value)
       cameraControls.enableDamping = true
-      cameraControls.autoRotate = false
+      cameraControls.autoRotate = true
       cameraControls.update()
     }
   }
@@ -229,8 +230,11 @@ function initScene() {
     gltfLoader.load(
         '/model/farm.gltf',
         (gltf) => {
+
+          console.log(gltf)
           gltf.scene.scale.set(1.5, 1.5, 1.5)
           scene.add(gltf.scene)
+          machines.push(gltf.scene.children[1446],gltf.scene.children[1447],gltf.scene.children[1448])
         },
         (xhr) => {
           console.log((xhr.loaded / xhr.total * 100) + '% loaded');

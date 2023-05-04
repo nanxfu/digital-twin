@@ -11,10 +11,14 @@
           <a-divider></a-divider>
           <div class="charts" ref="volumechartRef"></div>
           <a-typography-title :heading="5">
-            施肥策略
+            施肥任务
           </a-typography-title>
           <a-divider></a-divider>
-          <a-table :columns="columns" :data="data"/>
+          <a-table :columns="columns" :data="data">
+            <template #detail="{ record }">
+              <a-button @click="$modal.info({ title:'Name', content:record.name })">查看</a-button>
+            </template>
+          </a-table>
         </a-typography>
       </div>
     </a-scrollbar>
@@ -107,8 +111,8 @@ const columns = [
     dataIndex: 'equipment',
   },
   {
-    title: '是否循环',
-    dataIndex: 'isLoop',
+    title: '详情',
+    slotName: 'detail',
   },
 ];
 const data = reactive([{

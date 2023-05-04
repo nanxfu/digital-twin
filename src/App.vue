@@ -120,7 +120,7 @@ function openSideBar(){
                   <a-progress type="circle" size="large" :percent="0.4" status="warning"/>
                   <p>
                     <icon-sun style="color: #ff9626"/>
-                    园内光照
+                    土壤湿度
                   </p>
                 </div>
               </div>
