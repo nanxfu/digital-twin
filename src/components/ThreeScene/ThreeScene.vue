@@ -22,6 +22,7 @@
 </style>
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
+
 import * as THREE from 'three'
 import Stats from 'three/addons/libs/stats.module.js';
 
@@ -29,7 +30,9 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
+import {useMachineStore} from "../../store/machine";
 
+let machineStore = useMachineStore()
 let canvas = ref<HTMLCanvasElement | null>(null)
 let renderer: THREE.WebGLRenderer
 let scene: THREE.Scene
@@ -37,9 +40,10 @@ let camera: THREE.PerspectiveCamera
 let cameraControls: OrbitControls
 let axesHelper: THREE.AxesHelper
 let ambientLight: THREE.AmbientLight
-let cube:THREE.Mesh;
+let cube: THREE.Mesh;
 let cube2;
-let machines: Array<THREE.Group>
+let machines: Array<THREE.Group> = []
+let intersects: THREE.Intersection<THREE.Object3D>[]
 const degreesToRads = deg => (deg * Math.PI) / 180.0;
 
 let stats = new Stats();
@@ -50,16 +54,35 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 // canvas.addEventListener( 'pointermove', onPointerMove );
-onMounted(()=>{
-  (canvas.value as HTMLElement).addEventListener('pointermove', onPointerMove)
+onMounted(() => {
+  (canvas.value as HTMLElement).addEventListener('pointermove', onPointerMove);
+  (canvas.value as HTMLElement).addEventListener('click', onMouseClick)
 })
-function onPointerMove(event) {
-if(canvas.value){
-  pointer.x = (event.offsetX / canvas.value.clientWidth ) * 2 - 1;
-  pointer.y = -(event.offsetY / canvas.value.clientHeight) * 2 + 1;
-}
-  // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
 
+enum machineTable {
+  machinea = 0,
+  machineb = 1,
+  machinec = 2
+
+}
+
+function onMouseClick(event) {
+  if (intersects.length > 0) {
+    let mesh = intersects[0].object
+    if (mesh instanceof THREE.Mesh) {
+      let machineName = (mesh.parent as THREE.Group).name
+      machineStore.currentMachine = machineTable[machineName]
+    }
+
+  }
+}
+
+function onPointerMove(event) {
+  if (canvas.value) {
+    pointer.x = (event.offsetX / canvas.value.clientWidth) * 2 - 1;
+    pointer.y = -(event.offsetY / canvas.value.clientHeight) * 2 + 1;
+  }
+  // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
 }
 
 function animate() {
@@ -67,11 +90,29 @@ function animate() {
   stats.update();
   cameraControls.update()
   raycaster.setFromCamera(pointer, camera);
-  let intersects = raycaster.intersectObjects( [cube] );
-  cube.material.color.set(0x3f4341)
-  if(intersects.length > 0){
-    intersects[0].object.material.color.set(0xff0000)
-    // console.log(intersects)
+  intersects = raycaster.intersectObjects(machines, true);
+  //重置状态
+  machines.forEach((value) => {
+    value.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.material.opacity = 1
+        obj.scale.set(1, 1, 1)
+      }
+    })
+  })
+  //射线检测
+  if (intersects.length > 0) {
+    let mesh = intersects[0].object
+    mesh.parent.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.material.transparent = true
+        obj.material.opacity = 0.4
+        // obj.geometry.setAttribute("scale", new THREE.BufferAttribute(new Float32Array([1.5,1.5,1.5]), 3))
+        obj.scale.set(1.1, 1.1, 1.1)
+        // obj.scale = new THREE.Vector3(1.5, 1.5, 1.5)
+      }
+
+    })
   }
   renderer.render(scene, camera)
 }
@@ -147,26 +188,6 @@ function initScene() {
 
   // ==== CUBE ====
   {
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
-    // create a default (white) Basic material
-    const material = new THREE.MeshStandardMaterial({
-      color: '#f69f1f',
-      metalness: 0.5,
-      roughness: 0.7,
-    })
-    // create a Mesh containing the geometry and material
-    cube = new THREE.Mesh(geometry, material)
-    cube2 = new THREE.Mesh(geometry, material)
-    cube.castShadow = true
-    cube.position.y = 0.5
-    cube.position.x = 10
-    cube.position.z = 9
-
-    cube2.castShadow = true
-    cube2.position.y = 0.5
-    cube2.position.x = 7
-    cube2.position.z = 9
-
     const planeGeometry = new THREE.PlaneGeometry(3, 3)
     const planeMaterial = new THREE.MeshLambertMaterial({
       color: 'gray',
@@ -179,8 +200,7 @@ function initScene() {
     const plane = new THREE.Mesh(planeGeometry, planeMaterial)
     plane.rotateX(Math.PI / 2)
     plane.receiveShadow = true
-    scene.add(cube)
-    scene.add(cube2)
+
     scene.add(plane)
   }
 
@@ -231,10 +251,10 @@ function initScene() {
         '/model/farm.gltf',
         (gltf) => {
 
-          console.log(gltf)
           gltf.scene.scale.set(1.5, 1.5, 1.5)
           scene.add(gltf.scene)
-          machines.push(gltf.scene.children[1446],gltf.scene.children[1447],gltf.scene.children[1448])
+          machines.push(gltf.scene.children[1446], gltf.scene.children[1447], gltf.scene.children[1448])
+          console.log(machines)
         },
         (xhr) => {
           console.log((xhr.loaded / xhr.total * 100) + '% loaded');

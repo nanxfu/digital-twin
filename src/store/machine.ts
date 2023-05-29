@@ -5,6 +5,11 @@ import {reactive, Ref, ref} from "vue";
 export const useMachineStore = defineStore('machine', () => {
     const currentMachine = ref(0)
     const MachineVertex = ref([1, 1, 1])
+    const volume = ref([
+        [1000,800, 750, 700, 600, 200, 150, 100, 50,0],
+        [500, 500, 400, 350, 610, 1000, 500, 400, 100],
+        [900, 800, 700, 500, 1000, 900, 500, 400, 20]
+    ])
     const ec = ref([
         [0.8, 0.9, 0.7, 0.6, 0.8, 0.9, 0.7, 0.6],
         [2.5, 2.3, 2.7, 2.8, 2.5, 2.3, 2.7, 2.8],
@@ -22,5 +27,6 @@ export const useMachineStore = defineStore('machine', () => {
         pH,
         MachineVertex,
         currentMachine,
+        volume
     }
 })

@@ -5,6 +5,7 @@ import {onMounted, ref, watch, reactive} from "vue";
 import {useMachineStore} from "./store/machine";
 import MachineDetail from "./components/MachineDetail/MachineDetail.vue";
 import {useEventBusStore} from "./store/eventBus";
+import {Message} from "@arco-design/web-vue";
 // 难点2. 静态资源生产环境与开发环境不一致
 let machineStore = useMachineStore()
 let machineState = ref(0)
@@ -22,6 +23,10 @@ onMounted(() => {
 watch(machineState, (newValue, oldValue) => {
   machineStore.currentMachine = machineState.value
 })
+machineStore.$subscribe((mutation, state)=>{
+  machineState.value = machineStore.currentMachine
+  console.log("changed")
+})
 const visible = ref(false)
 const Loginform = reactive({
   name: '',
@@ -33,10 +38,12 @@ function handleLogin() {
 }
 
 function handleSubmit() {
-
+  console.log("submit")
 }
 
 function handleOk() {
+  console.log("submit")
+  Message.info("登录成功")
   visible.value = false;
 };
 

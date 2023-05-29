@@ -30,10 +30,19 @@ import {onMounted, ref, reactive, nextTick, watch} from "vue";
 
 import * as echarts from 'echarts';
 import {useEventBusStore} from "../../store/eventBus";
+import {useMachineStore} from "../../store/machine";
 
 let volumechartRef = ref(null)
 let volumeChart: echarts.EChartsType;
 let eventBus = useEventBusStore()
+let machineStore = useMachineStore()
+machineStore.$subscribe((mutation, state) => {
+  volumeChart.setOption({
+    series: [{
+      data: state.volume[state.currentMachine]
+    }]
+  })
+})
 onMounted(() => {
   if (volumechartRef.value) {
     volumeChart = echarts.init(volumechartRef.value, 'dark')
