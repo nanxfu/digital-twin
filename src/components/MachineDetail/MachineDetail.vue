@@ -16,9 +16,30 @@
           <a-divider></a-divider>
           <a-table :columns="columns" :data="data">
             <template #detail="{ record }">
-              <a-button @click="$modal.info({ title:'Name', content:record.name })">查看</a-button>
+              <a-button @click="visible = !visible">查看</a-button>
             </template>
           </a-table>
+          <a-modal v-model:visible="visible" @ok="handleOk">
+            <template #title>
+              任务详情
+            </template>
+            <h3>备注：</h3>
+            <span>A田日常施肥</span>
+            <div>
+            <a-button>立即执行</a-button>
+            </div>
+          </a-modal>
+          <a-button @click="openNewTask = true" v-if="userStore.logged">新增任务</a-button>
+          <a-modal v-model:visible="openNewTask" @ok="addNewTask">
+            <template #title>
+              新增任务
+            </template>
+            <h3>备注：</h3>
+            <span>blablablabla</span>
+            <div>
+              <a-button>立即执行</a-button>
+            </div>
+          </a-modal>
         </a-typography>
       </div>
     </a-scrollbar>
@@ -31,11 +52,21 @@ import {onMounted, ref, reactive, nextTick, watch} from "vue";
 import * as echarts from 'echarts';
 import {useEventBusStore} from "../../store/eventBus";
 import {useMachineStore} from "../../store/machine";
+import {useUserStore} from "../../store/user";
 
 let volumechartRef = ref(null)
 let volumeChart: echarts.EChartsType;
 let eventBus = useEventBusStore()
 let machineStore = useMachineStore()
+let visible = ref(false)
+let openNewTask = ref(false)
+let userStore = useUserStore()
+function handleOk(){
+
+}
+function addNewTask(){
+
+}
 machineStore.$subscribe((mutation, state) => {
   volumeChart.setOption({
     series: [{

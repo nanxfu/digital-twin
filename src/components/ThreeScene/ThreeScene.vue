@@ -73,7 +73,6 @@ function onMouseClick(event) {
       let machineName = (mesh.parent as THREE.Group).name
       machineStore.currentMachine = machineTable[machineName]
     }
-
   }
 }
 

@@ -6,7 +6,7 @@ export const useMachineStore = defineStore('machine', () => {
     const currentMachine = ref(0)
     const MachineVertex = ref([1, 1, 1])
     const volume = ref([
-        [1000,800, 750, 700, 600, 200, 150, 100, 50,0],
+        [1000, 800, 750, 700, 600, 200, 150, 100, 50, 0],
         [500, 500, 400, 350, 610, 1000, 500, 400, 100],
         [900, 800, 700, 500, 1000, 900, 500, 400, 20]
     ])
@@ -18,10 +18,16 @@ export const useMachineStore = defineStore('machine', () => {
         [6.5, 6.4, 6.7, 6.6, 6.5, 6.4, 6.7, 6.6],
         [6.0, 6.2, 6.1, 5.9, 6.0, 6.2, 6.1, 5.9],
         [6.0, 6.2, 6.1, 5.9, 6.0, 6.2, 6.1, 5.9]])
-    const log = ref([{
+    const log = ref([
+        [{
         date: '2022/4/10 10:21',
-        msg: '设备启动'
-    }])
+        msg: '设备启动',
+        icon: 'red'
+        },{
+        date: '2022/4/10 10:21',
+        msg: '设备启动',
+        icon: 'red'
+    }]])
     return {
         ec,
         pH,

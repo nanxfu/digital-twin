@@ -6,6 +6,7 @@ import {useMachineStore} from "./store/machine";
 import MachineDetail from "./components/MachineDetail/MachineDetail.vue";
 import {useEventBusStore} from "./store/eventBus";
 import {Message} from "@arco-design/web-vue";
+import {useUserStore} from "./store/user";
 // 难点2. 静态资源生产环境与开发环境不一致
 let machineStore = useMachineStore()
 let machineState = ref(0)
@@ -23,7 +24,7 @@ onMounted(() => {
 watch(machineState, (newValue, oldValue) => {
   machineStore.currentMachine = machineState.value
 })
-machineStore.$subscribe((mutation, state)=>{
+machineStore.$subscribe((mutation, state) => {
   machineState.value = machineStore.currentMachine
   console.log("changed")
 })
@@ -32,7 +33,7 @@ const Loginform = reactive({
   name: '',
   password: '',
 });
-
+const UserStore = useUserStore()
 function handleLogin() {
   visible.value = true
 }
@@ -44,6 +45,7 @@ function handleSubmit() {
 function handleOk() {
   console.log("submit")
   Message.info("登录成功")
+  UserStore.logged = true
   visible.value = false;
 };
 
@@ -51,7 +53,7 @@ function handleCancel() {
   visible.value = false;
 }
 
-function openSideBar(){
+function openSideBar() {
   eventBus.openSideBar = !eventBus.openSideBar
 }
 </script>
@@ -75,9 +77,9 @@ function openSideBar(){
                         src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
                     />
                   </a-avatar>
-                  <span>普通用户</span>
+                  <span>{{ UserStore.logged ? "管理员" :"普通用户" }}</span>
                 </div>
-                <a-button style="margin-right: 10px" @click="handleLogin">登录</a-button>
+                <a-button style="margin-right: 10px" @click="handleLogin" v-show="!UserStore.logged">登录</a-button>
                 <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">
                   <template #title>
                     管理员登录
@@ -133,8 +135,8 @@ function openSideBar(){
               </div>
               <a-carousel
                   :style="{
-      height: '240px',
-    }"
+                       height: '240px',
+                  }"
                   :auto-play="true"
                   indicator-type="dot"
                   show-arrow="hover"
